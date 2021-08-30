@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  prometheus:
+    container_name: prometheus
+    image: bitnami/prometheus
+    networks:
+      - prometheus-network
+    ports:
+      - "9001:9090"
+    volumes:
+      - "./prometheus/prometheus.yml:/opt/bitnami/prometheus/conf/prometheus.yml"
+      - "prometheus-data:/opt/bitnami/prometheus/data"
+  
+  grafana:
+    container_name: grafana
+    image: bitnami/grafana:6
+    networks: 
+      - prometheus-network
+    ports: 
+      - "9000:3000" 
+    volumes: 
+      - "grafana-data:/opt/bitnami/grafana/data"
+
+  my-machine:
+    container_name: my-machine
+    image: my-machine
+    networks: 
+      - prometheus-network
+    ports:
+      - "9002:9100"
+
+volumes:
+  prometheus-data:
+  grafana-data:
+  
+networks:
+  prometheus-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.101.1/24
